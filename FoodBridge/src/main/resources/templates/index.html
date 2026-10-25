@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Good Food. Shared Hope. Less Waste.')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar}"></header>
+<main id="main">
+<section class="hero py-5">
+  <div class="container py-lg-4">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <div class="row align-items-center g-5">
+      <div class="col-lg-7">
+        <span class="badge badge-soft mb-3">Food donation and waste reduction</span>
+        <h1>Good food. Shared hope. Less waste.</h1>
+        <p class="lead mt-3">FoodBridge links restaurants, bakeries and supermarkets that have surplus food with NGOs, shelters and volunteers who can put it on a plate before the pickup deadline runs out.</p>
+        <div class="d-flex flex-wrap gap-2 mt-4">
+          <a class="btn btn-accent btn-lg" th:href="@{/donor/donations/new}"><i class="bi bi-box-seam" aria-hidden="true"></i> Donate food</a>
+          <a class="btn btn-outline-primary btn-lg" th:href="@{/donations}"><i class="bi bi-search" aria-hidden="true"></i> Find food</a>
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <h2 class="h6 text-uppercase text-muted mb-3">Closing soon</h2>
+        <div class="ticket-stack" th:if="${!closingSoon.isEmpty()}">
+          <a class="ticket" th:each="d : ${closingSoon}" th:href="@{/donations/{id}(id=${d.id})}">
+            <div>
+              <div class="t-name" th:text="${d.name}">Food</div>
+              <div class="small text-muted"><span th:text="${d.donorName}">Donor</span> &middot; <span th:text="${d.city}">City</span> &middot; <span th:text="${d.remainingQuantity} + ' ' + ${d.unit}">10 portions</span></div>
+            </div>
+            <span class="countdown text-nowrap" th:attr="data-deadline=${d.pickupDeadline}">--</span>
+          </a>
+        </div>
+        <div class="empty-state fb-card" th:if="${closingSoon.isEmpty()}">
+          <i class="bi bi-basket" aria-hidden="true"></i>
+          <p class="mb-0 mt-2">No open donations right now. Check back soon.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="container py-5">
+  <h2 class="section-title text-center mb-1">How it works</h2>
+  <p class="text-center text-muted mb-4">Four steps from surplus to someone's meal.</p>
+  <div class="row g-4">
+    <div class="col-sm-6 col-lg-3" th:each="s : ${ {
+        {'bi-pencil-square','1. List the food','Donors post what is left, the quantity, allergens and a pickup deadline.'},
+        {'bi-hand-index-thumb','2. Request it','NGOs browse, filter and request the quantity they can use.'},
+        {'bi-check2-circle','3. Donor accepts','The quantity is reserved so nobody can book the same food twice.'},
+        {'bi-bicycle','4. Volunteer delivers','A volunteer picks it up and updates the status until it is delivered.'} } }">
+      <div class="fb-card p-4 h-100">
+        <div class="how-icon mb-3"><i class="bi" th:classappend="${s[0]}" aria-hidden="true"></i></div>
+        <h3 class="h5" th:text="${s[1]}">Step</h3>
+        <p class="text-muted mb-0" th:text="${s[2]}">Text</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="container pb-4">
+  <div class="fb-card p-4 p-lg-5">
+    <div class="d-flex flex-wrap justify-content-between align-items-end mb-3">
+      <h2 class="section-title mb-0">Platform impact</h2>
+      <span class="small text-muted">Calculated live from FoodBridge records. Nothing is estimated.</span>
+    </div>
+    <div class="row g-3 text-center">
+      <div class="col-6 col-md-3"><div class="value display-font fs-2 fw-bold text-primary" th:text="${impact.totalDonations}">0</div><div class="text-muted small">Donations listed</div></div>
+      <div class="col-6 col-md-3"><div class="value display-font fs-2 fw-bold text-primary" th:text="${impact.unitsDelivered}">0</div><div class="text-muted small">Units delivered</div></div>
+      <div class="col-6 col-md-3"><div class="value display-font fs-2 fw-bold text-primary" th:text="${impact.completedPickups}">0</div><div class="text-muted small">Completed pickups</div></div>
+      <div class="col-6 col-md-3"><div class="value display-font fs-2 fw-bold text-primary" th:text="${impact.activeDonors}">0</div><div class="text-muted small">Active donors</div></div>
+    </div>
+    <p class="small text-muted text-center mt-3 mb-0"><span th:text="${impact.participatingOrganizations}">0</span> registered NGOs and recipient organizations, <span th:text="${impact.volunteers}">0</span> volunteers. Units mix portions, kg, litres and packs.</p>
+  </div>
+</section>
+
+<section class="container py-4">
+  <div class="safety-note"><strong>Food safety first.</strong> FoodBridge only coordinates donations. It does not inspect or certify food. Donors must list accurate preparation times, storage and allergen details, and recipients must check and serve food according to the food-safety rules that apply to them.</div>
+</section>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

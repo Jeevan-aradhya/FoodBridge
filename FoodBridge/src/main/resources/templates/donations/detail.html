@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Donation details')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar}"></header>
+<main id="main" class="container py-4">
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<nav aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a th:href="@{/donations}">Find food</a></li><li class="breadcrumb-item active" aria-current="page" th:text="${donation.name}">Food</li></ol></nav>
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="fb-card overflow-hidden">
+      <img th:src="${donation.imageUrl}" data-fallback th:alt="${donation.name}" class="w-100" style="max-height:380px;object-fit:cover">
+      <div class="p-4">
+        <div class="d-flex flex-wrap gap-2 mb-2">
+          <span class="badge badge-soft" th:text="${donation.category}">Cat</span>
+          <span class="badge badge-soft" th:text="${donation.status}">AVAILABLE</span>
+          <span class="badge badge-warn" th:if="${donation.available and donation.urgency == 'URGENT'}">Closing soon</span>
+          <span class="badge badge-danger-soft" th:if="${donation.reported and isOwner}">Reported</span>
+        </div>
+        <h1 class="h2" th:text="${donation.name}">Food</h1>
+        <p class="text-muted"><i class="bi bi-shop" aria-hidden="true"></i> <span th:text="${donation.donorName}">Donor</span> &middot; <i class="bi bi-geo-alt" aria-hidden="true"></i> <span th:text="${donation.city}">City</span></p>
+        <p th:if="${donation.description}" th:text="${donation.description}">Description</p>
+        <dl class="row mb-0">
+          <dt class="col-sm-4">Quantity</dt><dd class="col-sm-8"><strong th:text="${donation.remainingQuantity}">5</strong> of <span th:text="${donation.quantity} + ' ' + ${donation.unit}">10 portions</span> still unreserved</dd>
+          <dt class="col-sm-4">Prepared</dt><dd class="col-sm-8" th:text="${#temporals.format(donation.preparedAt, 'dd MMM yyyy HH:mm')}">date</dd>
+          <dt class="col-sm-4">Best before / expires</dt><dd class="col-sm-8" th:text="${#temporals.format(donation.expiresAt, 'dd MMM yyyy HH:mm')}">date</dd>
+          <dt class="col-sm-4">Pickup deadline</dt><dd class="col-sm-8"><span th:text="${#temporals.format(donation.pickupDeadline, 'dd MMM yyyy HH:mm')}">date</span> &middot; <span class="countdown" th:attr="data-deadline=${donation.pickupDeadline}">--</span></dd>
+          <dt class="col-sm-4">Dietary</dt><dd class="col-sm-8" th:text="${donation.dietaryInfo != null and !donation.dietaryInfo.isBlank()} ? ${donation.dietaryInfo} : 'Not specified'">x</dd>
+          <dt class="col-sm-4">Allergens</dt><dd class="col-sm-8" th:text="${donation.allergenInfo != null and !donation.allergenInfo.isBlank()} ? ${donation.allergenInfo} : 'Not specified. Ask the donor before serving.'">x</dd>
+          <dt class="col-sm-4">Storage</dt><dd class="col-sm-8" th:text="${donation.storageInfo != null and !donation.storageInfo.isBlank()} ? ${donation.storageInfo} : 'Not specified'">x</dd>
+          <dt class="col-sm-4">Pickup address</dt>
+          <dd class="col-sm-8">
+            <span th:if="${donation.pickupAddress != null}"><span th:text="${donation.pickupAddress}">Address</span><span th:if="${donation.pickupInstructions}"><br><em th:text="${donation.pickupInstructions}">Instructions</em></span></span>
+            <span class="text-muted" th:if="${donation.pickupAddress == null}">Shared with the recipient and volunteer once a request is accepted.</span>
+          </dd>
+        </dl>
+      </div>
+    </div>
+    <div class="safety-note mt-3"><strong>Food safety:</strong> FoodBridge is a coordination tool, not a food-safety certificate. Check the food, its temperature and the allergen details before serving, and follow your local food-safety rules.</div>
+  </div>
+  <div class="col-lg-5">
+    <div class="fb-card p-4 mb-3" sec:authorize="hasRole('RECIPIENT')">
+      <h2 class="h5">Request this food</h2>
+      <div th:if="${donation.available}">
+        <p class="text-muted small">Nothing is reserved until the donor accepts. Only <strong th:text="${donation.remainingQuantity}">5</strong> <span th:text="${donation.unit}">units</span> remain.</p>
+        <form th:action="@{/donations/{id}/request(id=${donation.id})}" th:object="${requestForm}" method="post">
+          <div class="mb-3"><label class="form-label" for="quantity">Quantity needed</label><input class="form-control" id="quantity" type="number" min="1" th:max="${donation.remainingQuantity}" th:field="*{quantity}" required></div>
+          <div class="mb-3"><label class="form-label" for="message">Message to the donor (optional)</label><textarea class="form-control" id="message" rows="3" maxlength="500" th:field="*{message}"></textarea></div>
+          <button class="btn btn-primary w-100" type="submit" data-loading>Send request</button>
+        </form>
+      </div>
+      <div class="alert alert-secondary mb-0" th:unless="${donation.available}">This donation is no longer available for new requests.</div>
+    </div>
+    <div class="fb-card p-4 mb-3" th:if="${isOwner}">
+      <h2 class="h5">Manage your listing</h2>
+      <div class="d-flex gap-2 flex-wrap">
+        <a class="btn btn-outline-primary" th:href="@{/donor/donations/{id}/edit(id=${donation.id})}"><i class="bi bi-pencil" aria-hidden="true"></i> Edit</a>
+        <a class="btn btn-outline-primary" th:href="@{/donor/requests}">View requests</a>
+        <form th:action="@{/donor/donations/{id}/delete(id=${donation.id})}" method="post" data-confirm="Remove this donation? Pending requests will be declined.">
+          <button class="btn btn-outline-danger" type="submit"><i class="bi bi-trash" aria-hidden="true"></i> Remove</button>
+        </form>
+      </div>
+    </div>
+    <div class="fb-card p-4 mb-3" sec:authorize="!isAuthenticated()">
+      <h2 class="h5">Want this food?</h2><p class="text-muted">NGOs and recipient organizations can sign in to request it.</p>
+      <a class="btn btn-primary" th:href="@{/login}">Sign in</a> <a class="btn btn-outline-primary" th:href="@{/register}">Create account</a>
+    </div>
+    <div class="fb-card p-4" sec:authorize="isAuthenticated()" th:unless="${isOwner}">
+      <h2 class="h6">Something wrong with this listing?</h2>
+      <form th:action="@{/donations/{id}/report(id=${donation.id})}" method="post">
+        <label class="form-label small" for="reason">Tell us what is wrong</label>
+        <input class="form-control mb-2" id="reason" name="reason" maxlength="300" required>
+        <button class="btn btn-sm btn-outline-danger" type="submit"><i class="bi bi-flag" aria-hidden="true"></i> Report listing</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

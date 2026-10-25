@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Profile and settings')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar}"></header>
+<main id="main" class="container py-4">
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<h1 class="h2 section-title mb-3">Profile and account settings</h1>
+<div class="row g-4">
+<div class="col-lg-8">
+<div class="fb-card p-4">
+  <p class="text-muted">Signed in as <strong th:text="${account.email}">email</strong> &middot; <span class="badge badge-soft" th:text="${account.role}">ROLE</span></p>
+  <form th:action="@{/profile}" th:object="${form}" method="post" novalidate>
+    <div class="alert alert-danger" role="alert" th:if="${#fields.hasGlobalErrors()}"><div th:each="e : ${#fields.globalErrors()}" th:text="${e}">Error</div></div>
+    <div class="row g-3">
+      <div class="col-md-6"><label class="form-label" for="fullName">Full name</label><input class="form-control" id="fullName" th:field="*{fullName}" th:errorclass="is-invalid"><div class="invalid-feedback" th:errors="*{fullName}">e</div></div>
+      <div class="col-md-6"><label class="form-label" for="phone">Phone</label><input class="form-control" id="phone" th:field="*{phone}" th:errorclass="is-invalid"><div class="invalid-feedback" th:errors="*{phone}">e</div></div>
+      <div class="col-md-6"><label class="form-label" for="city">City</label><input class="form-control" id="city" th:field="*{city}" th:errorclass="is-invalid"><div class="invalid-feedback" th:errors="*{city}">e</div></div>
+      <th:block th:if="${account.role == 'DONOR' or account.role == 'RECIPIENT'}">
+        <div class="col-md-6"><label class="form-label" for="organizationName">Business / organization name</label><input class="form-control" id="organizationName" th:field="*{organizationName}"></div>
+        <div class="col-md-6"><label class="form-label" for="organizationType">Type</label><input class="form-control" id="organizationType" th:field="*{organizationType}"></div>
+        <div class="col-md-6"><label class="form-label" for="registrationNumber">Registration number (optional)</label><input class="form-control" id="registrationNumber" th:field="*{registrationNumber}"></div>
+        <div class="col-12"><label class="form-label" for="address">Address</label><input class="form-control" id="address" th:field="*{address}"><div class="form-text">Used as the drop-off (NGOs) or default pickup point (donors). Not shown publicly.</div></div>
+        <div class="col-12"><label class="form-label" for="description">About</label><textarea class="form-control" id="description" rows="3" th:field="*{description}"></textarea></div>
+      </th:block>
+      <div class="col-12" th:if="${account.role == 'RECIPIENT'}">
+        <fieldset><legend class="form-label fs-6">Preferred food categories (used for suggestions)</legend>
+          <div class="form-check form-check-inline" th:each="c : ${categories}"><input class="form-check-input" type="checkbox" th:field="*{preferredCategories}" th:value="${c}" th:id="'pc-' + ${c}"><label class="form-check-label" th:for="'pc-' + ${c}" th:text="${c.label}">Cat</label></div>
+        </fieldset>
+      </div>
+      <th:block th:if="${account.role == 'VOLUNTEER'}">
+        <div class="col-md-6"><label class="form-label" for="vehicleType">Vehicle</label><input class="form-control" id="vehicleType" th:field="*{vehicleType}"></div>
+        <div class="col-md-6"><label class="form-label" for="availability">Availability</label><input class="form-control" id="availability" th:field="*{availability}" placeholder="Weekday evenings"></div>
+        <div class="col-md-6"><label class="form-label" for="serviceArea">Service area</label><input class="form-control" id="serviceArea" th:field="*{serviceArea}"></div>
+      </th:block>
+    </div>
+    <button class="btn btn-primary mt-4" type="submit" data-loading>Save profile</button>
+  </form>
+</div></div>
+<div class="col-lg-4">
+<div class="fb-card p-4">
+  <h2 class="h5">Change password</h2>
+  <form th:action="@{/profile/password}" th:object="${passwordForm}" method="post">
+    <div class="mb-3"><label class="form-label" for="currentPassword">Current password</label><input class="form-control" id="currentPassword" type="password" name="currentPassword" autocomplete="current-password" required></div>
+    <div class="mb-3"><label class="form-label" for="newPassword">New password</label><input class="form-control" id="newPassword" type="password" name="newPassword" autocomplete="new-password" required><div class="form-text">8+ characters, with a letter and a number.</div></div>
+    <button class="btn btn-outline-primary" type="submit">Update password</button>
+  </form>
+</div></div>
+</div>
+
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

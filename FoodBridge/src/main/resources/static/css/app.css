@@ -1,0 +1,97 @@
+:root {
+  --fb-forest: #1f4d36;
+  --fb-forest-dark: #14352a;
+  --fb-leaf: #2f7d52;
+  --fb-orange: #d9701c;
+  --fb-orange-soft: #fdf0e4;
+  --fb-bg: #f5f7f5;
+  --fb-surface: #ffffff;
+  --fb-text: #1b2a22;
+  --fb-muted: #55655c;
+  --fb-border: #dfe6e0;
+  --bs-primary: #1f4d36;
+  --bs-primary-rgb: 31, 77, 54;
+  --bs-link-color: #1f4d36;
+  --bs-link-hover-color: #14352a;
+  --bs-body-font-family: "Instrument Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --bs-body-color: var(--fb-text);
+  --bs-body-bg: var(--fb-bg);
+}
+body { font-family: var(--bs-body-font-family); background: var(--fb-bg); color: var(--fb-text); }
+h1, h2, h3, h4, .display-font { font-family: "Bricolage Grotesque", "Instrument Sans", system-ui, sans-serif; letter-spacing: -0.01em; }
+.text-muted { color: var(--fb-muted) !important; }
+a:focus-visible, button:focus-visible, .form-control:focus, .form-select:focus { outline: 3px solid rgba(217,112,28,.55); outline-offset: 2px; box-shadow: none; }
+.skip-link { position: absolute; left: -999px; top: 8px; background: #fff; padding: 8px 14px; border-radius: 8px; z-index: 2000; }
+.skip-link:focus { left: 8px; }
+
+/* buttons */
+.btn { border-radius: 10px; font-weight: 600; }
+.btn-primary { --bs-btn-bg: var(--fb-forest); --bs-btn-border-color: var(--fb-forest); --bs-btn-hover-bg: var(--fb-forest-dark); --bs-btn-hover-border-color: var(--fb-forest-dark); --bs-btn-active-bg: var(--fb-forest-dark); --bs-btn-disabled-bg: var(--fb-forest); }
+.btn-accent { background: var(--fb-orange); border-color: var(--fb-orange); color: #fff; }
+.btn-accent:hover { background: #bd5e12; border-color: #bd5e12; color: #fff; }
+.btn-outline-primary { --bs-btn-color: var(--fb-forest); --bs-btn-border-color: var(--fb-forest); --bs-btn-hover-bg: var(--fb-forest); --bs-btn-hover-border-color: var(--fb-forest); }
+
+/* navbar */
+.fb-nav { background: var(--fb-surface); border-bottom: 1px solid var(--fb-border); }
+.fb-brand { font-family: "Bricolage Grotesque", sans-serif; font-weight: 800; color: var(--fb-forest) !important; font-size: 1.35rem; display: inline-flex; align-items: center; gap: .5rem; }
+.fb-brand .mark { width: 32px; height: 32px; border-radius: 9px; background: var(--fb-forest); color: #fff; display: inline-grid; place-items: center; font-size: 1.05rem; }
+.fb-nav .nav-link { color: var(--fb-text); font-weight: 500; border-radius: 8px; padding: .45rem .8rem; }
+.fb-nav .nav-link:hover, .fb-nav .nav-link.active { background: var(--fb-bg); color: var(--fb-forest); }
+.notif-badge { font-size: .65rem; position: absolute; top: 2px; right: 0; }
+
+/* hero */
+.hero { background: linear-gradient(180deg, #ffffff 0%, var(--fb-bg) 100%); border-bottom: 1px solid var(--fb-border); }
+.hero h1 { font-size: clamp(2.2rem, 5vw, 3.6rem); font-weight: 800; line-height: 1.05; color: var(--fb-forest-dark); }
+.hero .lead { color: var(--fb-muted); max-width: 34rem; }
+.ticket-stack { display: grid; gap: .9rem; }
+.ticket { background: var(--fb-surface); border: 1px solid var(--fb-border); border-left: 5px solid var(--fb-orange); border-radius: 14px; padding: .9rem 1rem; display: flex; justify-content: space-between; gap: 1rem; align-items: center; text-decoration: none; color: inherit; }
+.ticket:hover { box-shadow: 0 6px 18px rgba(20,53,42,.10); color: inherit; }
+.ticket .t-name { font-weight: 700; }
+
+/* cards */
+.fb-card { background: var(--fb-surface); border: 1px solid var(--fb-border); border-radius: 16px; box-shadow: 0 1px 2px rgba(20,53,42,.05); }
+.donation-card { overflow: hidden; height: 100%; display: flex; flex-direction: column; }
+.donation-card img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; background: #e8eee9; }
+.donation-card .card-body { padding: 1rem 1.1rem 1.1rem; display: flex; flex-direction: column; gap: .5rem; flex: 1; }
+.donation-card.is-unavailable img { filter: grayscale(.8); opacity: .75; }
+.stat-card { padding: 1.1rem 1.25rem; }
+.stat-card .value { font-family: "Bricolage Grotesque", sans-serif; font-size: 2rem; font-weight: 800; color: var(--fb-forest); line-height: 1.1; }
+.stat-card .label { color: var(--fb-muted); font-size: .9rem; }
+.section-title { font-weight: 800; color: var(--fb-forest-dark); }
+
+/* badges and urgency */
+.badge-soft { background: #e9f1ec; color: var(--fb-forest); font-weight: 600; }
+.badge-warn { background: var(--fb-orange-soft); color: #9a4a0c; font-weight: 600; }
+.badge-danger-soft { background: #fde8e6; color: #9b2c22; font-weight: 600; }
+.countdown { font-weight: 700; font-variant-numeric: tabular-nums; }
+.countdown.urgent { color: #b3261e; }
+.countdown.soon { color: #a65a10; }
+.countdown.expired { color: #7a7a7a; }
+
+/* timeline */
+.timeline { display: flex; gap: .25rem; align-items: center; flex-wrap: wrap; }
+.timeline .step { display: inline-flex; align-items: center; gap: .35rem; padding: .25rem .6rem; border-radius: 999px; background: #eef2ef; color: var(--fb-muted); font-size: .8rem; font-weight: 600; }
+.timeline .step.done { background: #dcebdf; color: var(--fb-forest); }
+.timeline .step.current { background: var(--fb-forest); color: #fff; }
+.timeline .sep { width: 14px; height: 2px; background: var(--fb-border); }
+
+/* tables, forms */
+.table > :not(caption) > * > * { padding: .8rem .9rem; }
+.table thead th { color: var(--fb-muted); font-weight: 600; font-size: .85rem; background: #f0f4f1; border-bottom: 1px solid var(--fb-border); }
+.form-label { font-weight: 600; }
+.form-control, .form-select { border-radius: 10px; border-color: #c9d4cc; }
+.form-text { color: var(--fb-muted); }
+.empty-state { text-align: center; padding: 3rem 1rem; color: var(--fb-muted); }
+.empty-state i { font-size: 2.4rem; color: #9db5a6; }
+.safety-note { background: var(--fb-orange-soft); border: 1px solid #f1d2b3; border-radius: 12px; padding: .8rem 1rem; color: #6b3a0e; font-size: .92rem; }
+
+/* footer */
+.fb-footer { background: var(--fb-forest-dark); color: #cfe0d6; }
+.fb-footer a { color: #e6f1ea; text-decoration: none; }
+.fb-footer a:hover { text-decoration: underline; }
+
+.btn-loading .spinner-border { width: 1rem; height: 1rem; border-width: .15em; }
+.chart-box { position: relative; height: 280px; }
+.how-icon { width: 52px; height: 52px; border-radius: 14px; background: #e4efe8; color: var(--fb-forest); display: grid; place-items: center; font-size: 1.5rem; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+@media (max-width: 575.98px) { .stat-card .value { font-size: 1.6rem; } }

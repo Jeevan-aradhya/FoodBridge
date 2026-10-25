@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Admin dashboard')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar}"></header>
+<main id="main" class="container py-4">
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2"><h1 class="h2 section-title mb-0">Admin dashboard</h1>
+<div class="d-flex gap-2"><a class="btn btn-outline-primary" th:href="@{/admin/users}">Users</a><a class="btn btn-outline-primary" th:href="@{/admin/donations}">Donations and requests</a><a class="btn btn-outline-primary" th:href="@{/admin/audit}">Audit log</a><a class="btn btn-outline-primary" th:href="@{/admin/report.csv}"><i class="bi bi-download" aria-hidden="true"></i> CSV</a></div></div>
+<div class="row g-3 mb-4">
+<div class="col-6 col-lg-3"><div class="fb-card stat-card"><div class="label"><i class="bi bi-people" aria-hidden="true"></i> Users</div><div class="value" th:text="${summary.users}">0</div></div></div><div class="col-6 col-lg-3"><div class="fb-card stat-card"><div class="label"><i class="bi bi-box-seam" aria-hidden="true"></i> Donations</div><div class="value" th:text="${summary.donations}">0</div></div></div><div class="col-6 col-lg-3"><div class="fb-card stat-card"><div class="label"><i class="bi bi-lightning" aria-hidden="true"></i> Available now</div><div class="value" th:text="${summary.availableNow}">0</div></div></div><div class="col-6 col-lg-3"><div class="fb-card stat-card"><div class="label"><i class="bi bi-hourglass-split" aria-hidden="true"></i> Pending requests</div><div class="value" th:text="${summary.pendingRequests}">0</div></div></div><div class="col-6 col-lg-3"><div class="fb-card stat-card"><div class="label"><i class="bi bi-bell" aria-hidden="true"></i> Open pickup tasks</div><div class="value" th:text="${summary.openTasks}">0</div></div></div><div class="col-6 col-lg-3"><div class="fb-card stat-card"><div class="label"><i class="bi bi-check2-all" aria-hidden="true"></i> Deliveries completed</div><div class="value" th:text="${summary.delivered}">0</div></div></div><div class="col-6 col-lg-3"><div class="fb-card stat-card"><div class="label"><i class="bi bi-heart" aria-hidden="true"></i> Units delivered</div><div class="value" th:text="${impact.unitsDelivered}">0</div></div></div><div class="col-6 col-lg-3"><div class="fb-card stat-card"><div class="label"><i class="bi bi-shop" aria-hidden="true"></i> Active donors</div><div class="value" th:text="${impact.activeDonors}">0</div></div></div>
+</div>
+<div class="row g-4">
+  <div class="col-lg-7"><div class="fb-card p-4"><h2 class="h5">Weekly activity (whole platform)</h2><div class="chart-box"><canvas id="weeklyChart" role="img" aria-label="Weekly platform activity"></canvas></div></div></div>
+  <div class="col-lg-5"><div class="fb-card p-4"><h2 class="h5">Recent activity</h2>
+    <ul class="list-unstyled small mb-0"><li class="py-1 border-bottom" th:each="a : ${recentAudit}"><strong th:text="${a.action}">ACTION</strong> <span class="text-muted" th:text="'by ' + ${a.actorEmail} + ' at ' + ${#temporals.format(a.createdAt, 'dd MMM HH:mm')}">by</span></li></ul>
+    <a class="small" th:href="@{/admin/audit}">Full audit log</a></div></div>
+</div>
+
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

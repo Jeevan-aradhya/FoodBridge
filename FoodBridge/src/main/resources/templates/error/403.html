@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('403 Access denied')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar}"></header>
+<main id="main" class="container py-4">
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<div class="empty-state fb-card my-5"><i class="bi bi-shield-lock" aria-hidden="true" style="font-size:3rem"></i>
+<h1 class="h2 mt-3">Access denied</h1><p class="mb-4">You do not have permission to open this page. If you think this is a mistake, sign in with the right account.</p>
+<a class="btn btn-primary" href="/">Back to home</a> <a class="btn btn-outline-primary" href="/donations">Find food</a></div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

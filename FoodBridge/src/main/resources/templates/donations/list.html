@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Find food')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar}"></header>
+<main id="main" class="container py-4">
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<div class="d-flex flex-wrap justify-content-between align-items-end mb-3">
+  <div><h1 class="h2 section-title mb-1">Available food</h1><p class="text-muted mb-0">Filter by category, quantity and how soon pickup closes.</p></div>
+  <a sec:authorize="hasRole('DONOR')" class="btn btn-accent" th:href="@{/donor/donations/new}"><i class="bi bi-plus-lg" aria-hidden="true"></i> Donate food</a>
+</div>
+<form class="fb-card p-3 mb-4" th:action="@{/donations}" method="get" role="search">
+  <div class="row g-2 align-items-end">
+    <div class="col-md-3"><label class="form-label small mb-1" for="q">Search</label><input class="form-control" id="q" name="q" th:value="${filter.q}" placeholder="Food name"></div>
+    <div class="col-md-2"><label class="form-label small mb-1" for="category">Category</label>
+      <select class="form-select" id="category" name="category"><option value="">All</option><option th:each="c : ${categories}" th:value="${c}" th:text="${c.label}" th:selected="${c.name() == filter.category}">Cat</option></select></div>
+    <div class="col-md-2"><label class="form-label small mb-1" for="city">City</label><input class="form-control" id="city" name="city" th:value="${filter.city}"></div>
+    <div class="col-6 col-md-1"><label class="form-label small mb-1" for="minQuantity">Min qty</label><input class="form-control" id="minQuantity" name="minQuantity" type="number" min="1" th:value="${filter.minQuantity}"></div>
+    <div class="col-6 col-md-2"><label class="form-label small mb-1" for="withinHours">Pickup within</label>
+      <select class="form-select" id="withinHours" name="withinHours"><option value="">Any time</option>
+        <option value="2" th:selected="${filter.withinHours == 2}">2 hours</option><option value="6" th:selected="${filter.withinHours == 6}">6 hours</option><option value="24" th:selected="${filter.withinHours == 24}">24 hours</option></select></div>
+    <div class="col-6 col-md-2"><label class="form-label small mb-1" for="availability">Show</label>
+      <select class="form-select" id="availability" name="availability"><option value="AVAILABLE" th:selected="${filter.availability == 'AVAILABLE'}">Available only</option><option value="ALL" th:selected="${filter.availability == 'ALL'}">Everything</option></select></div>
+    <div class="col-6 col-md-2"><label class="form-label small mb-1" for="sort">Sort by</label>
+      <select class="form-select" id="sort" name="sort"><option value="deadline" th:selected="${filter.sort == 'deadline'}">Closing soonest</option><option value="newest" th:selected="${filter.sort == 'newest'}">Newest</option><option value="quantity" th:selected="${filter.sort == 'quantity'}">Most quantity</option></select></div>
+    <div class="col-md-3 d-flex gap-2"><button class="btn btn-primary flex-fill" type="submit"><i class="bi bi-funnel" aria-hidden="true"></i> Apply</button><a class="btn btn-light" th:href="@{/donations}">Reset</a></div>
+  </div>
+</form>
+<p class="text-muted small" th:text="${page.totalElements} + ' donation(s) found'">0 found</p>
+<div class="row g-4" th:if="${!page.isEmpty()}">
+  <div class="col-md-6 col-lg-4" th:each="d : ${page.content}"><div th:replace="~{fragments/layout :: donationCard(${d})}"></div></div>
+</div>
+<div class="empty-state fb-card" th:if="${page.isEmpty()}"><i class="bi bi-search" aria-hidden="true"></i><h2 class="h5 mt-2">No donations match your filters</h2><p>Try a wider search or switch "Show" to Everything.</p><a class="btn btn-outline-primary" th:href="@{/donations}">Clear filters</a></div>
+<div th:replace="~{fragments/layout :: pager(${page}, ${basePath}, ${baseQuery})}"></div>
+
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Requests')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar}"></header>
+<main id="main" class="container py-4">
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<h1 class="h2 section-title mb-3" th:text="${mode == 'donor'} ? 'Requests for your donations' : 'My donation requests'">Requests</h1>
+<form class="mb-3" th:if="${mode == 'donor'}" th:action="@{/donor/requests}" method="get">
+  <div class="d-flex gap-2 align-items-end"><div><label class="form-label small mb-1" for="status">Status</label><select class="form-select" id="status" name="status"><option value="">All</option><option th:each="s : ${statuses}" th:value="${s}" th:text="${s}" th:selected="${s == selected}">s</option></select></div><button class="btn btn-outline-primary" type="submit">Filter</button></div>
+</form>
+
+<div class="fb-card" th:if="${!page.isEmpty()}">
+<div class="table-responsive">
+<table class="table align-middle mb-0">
+  <thead><tr><th>Food</th><th th:text="${mode == 'donor'} ? 'Recipient' : 'Donor'">Who</th><th>Quantity</th><th>Status</th><th>Delivery</th><th class="text-end">Actions</th></tr></thead>
+  <tbody>
+  <tr th:each="r : ${page.content}">
+    <td><a th:href="@{/donations/{id}(id=${r.donationId})}" th:text="${r.donationName}">Food</a><div class="small text-muted" th:text="${#temporals.format(r.createdAt, 'dd MMM yyyy HH:mm')}">date</div><div class="small fst-italic" th:if="${r.message}" th:text="${r.message}">msg</div></td>
+    <td th:text="${mode == 'donor'} ? ${r.recipientName} : ${r.donorName}">Name</td>
+    <td th:text="${r.quantity} + ' ' + ${r.unit}">5 portions</td>
+    <td><span class="badge" th:classappend="${r.status == 'PENDING'} ? 'badge-warn' : (${r.status == 'ACCEPTED' or r.status == 'COMPLETED'} ? 'badge-soft' : 'badge-danger-soft')" th:text="${r.status}">PENDING</span></td>
+    <td><span class="small" th:text="${r.deliveryStatus != null} ? ${r.deliveryStatus} : '-'">-</span></td>
+    <td class="text-end">
+      <th:block th:if="${mode == 'donor' and r.status == 'PENDING'}">
+        <form class="d-inline" th:action="@{/requests/{id}/accept(id=${r.id})}" method="post" data-confirm="Accept this request? The quantity will be reserved for this organization."><button class="btn btn-sm btn-primary" type="submit">Accept</button></form>
+        <form class="d-inline" th:action="@{/requests/{id}/reject(id=${r.id})}" method="post" data-confirm="Decline this request?"><button class="btn btn-sm btn-outline-danger" type="submit">Reject</button></form>
+      </th:block>
+      <form class="d-inline" th:if="${mode == 'recipient' and (r.status == 'PENDING' or r.status == 'ACCEPTED')}" th:action="@{/requests/{id}/cancel(id=${r.id})}" method="post" data-confirm="Cancel this request?"><button class="btn btn-sm btn-outline-danger" type="submit">Cancel</button></form>
+      <a class="btn btn-sm btn-light" th:if="${r.deliveryId != null}" th:href="@{/tracking}">Track</a>
+    </td>
+  </tr>
+  </tbody>
+</table></div></div>
+<div class="empty-state fb-card" th:if="${page.isEmpty()}"><i class="bi bi-inbox" aria-hidden="true"></i><p class="mt-2 mb-0">Nothing here yet.</p></div>
+<div th:replace="~{fragments/layout :: pager(${page}, ${basePath}, ${baseQuery})}"></div>
+
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

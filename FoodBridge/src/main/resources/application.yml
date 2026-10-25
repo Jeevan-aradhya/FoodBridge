@@ -1,0 +1,55 @@
+spring:
+  application:
+    name: foodbridge
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/foodbridge?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
+    username: ${DB_USERNAME:foodbridge}
+    password: ${DB_PASSWORD:}
+  jpa:
+    hibernate:
+      ddl-auto: ${DDL_AUTO:update}
+    open-in-view: false
+  thymeleaf:
+    cache: ${THYMELEAF_CACHE:true}
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 3MB
+
+server:
+  servlet:
+    session:
+      timeout: 30m
+      cookie:
+        http-only: true
+        same-site: lax
+        secure: ${COOKIE_SECURE:false}
+  error:
+    include-message: never
+    include-stacktrace: never
+    include-binding-errors: never
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+foodbridge:
+  upload-dir: ${UPLOAD_DIR:./uploads}
+  seed:
+    enabled: ${SEED_ENABLED:false}
+    demo-password: ${SEED_DEMO_PASSWORD:Demo@12345}
+  admin:
+    email: ${ADMIN_EMAIL:}
+    password: ${ADMIN_PASSWORD:}
+  mail:
+    enabled: ${MAIL_ENABLED:false}
+    from: ${MAIL_FROM:no-reply@foodbridge.test}

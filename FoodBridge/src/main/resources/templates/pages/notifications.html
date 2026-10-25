@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Notifications')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar}"></header>
+<main id="main" class="container py-4">
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<div class="d-flex justify-content-between align-items-center mb-3"><h1 class="h2 section-title mb-0">Notifications</h1>
+<form th:action="@{/notifications/read-all}" method="post"><button class="btn btn-outline-primary btn-sm" type="submit">Mark all as read</button></form></div>
+<div class="fb-card p-3 mb-2 border-2" th:each="n : ${page.content}" th:classappend="${!n.read} ? 'border-primary'" data-notification>
+  <div class="d-flex justify-content-between gap-3">
+    <div><div class="fw-semibold"><span class="unread-dot badge bg-primary me-1" th:if="${!n.read}">New</span><span th:text="${n.title}">Title</span></div>
+      <div class="text-muted" th:text="${n.message}">Message</div>
+      <a class="small" th:if="${n.link}" th:href="@{${n.link}}">Open</a></div>
+    <div class="text-end small text-muted text-nowrap"><div th:text="${#temporals.format(n.createdAt, 'dd MMM HH:mm')}">date</div>
+      <button class="btn btn-link btn-sm p-0" type="button" th:if="${!n.read}" th:attr="data-mark-read=${n.id}">Mark read</button></div>
+  </div>
+</div>
+<div class="empty-state fb-card" th:if="${page.isEmpty()}"><i class="bi bi-bell-slash" aria-hidden="true"></i><p class="mt-2 mb-0">You have no notifications.</p></div>
+<div th:replace="~{fragments/layout :: pager(${page}, ${basePath}, ${baseQuery})}"></div>
+
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

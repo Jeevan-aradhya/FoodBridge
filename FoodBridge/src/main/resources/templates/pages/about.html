@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('About')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar}"></header>
+<main id="main" class="container py-4">
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<div class="row justify-content-center"><div class="col-lg-8">
+<h1 class="section-title">About FoodBridge</h1>
+<p class="lead text-muted">Every day, good food is thrown away while people nearby go hungry. FoodBridge is a small, practical bridge between the two.</p>
+<h2 class="h4 mt-4">Who it is for</h2>
+<ul><li><strong>Donors</strong>: restaurants, hotels, bakeries, supermarkets, event organizers and individuals with surplus food.</li><li><strong>NGOs and recipients</strong>: charities, shelters and community groups.</li><li><strong>Volunteers</strong>: people who collect and deliver donations.</li><li><strong>Administrators</strong>: keep the platform safe and fair.</li></ul>
+<h2 class="h4 mt-4">How we keep it fair</h2>
+<ul><li>Quantity is reserved only when a donor accepts a request, and the system prevents the same food being booked twice.</li><li>Listings carry pickup deadlines, allergen and storage information, and expire automatically.</li><li>Full addresses are shared only with the people involved in an accepted request.</li></ul>
+<div class="safety-note mt-4"><strong>Food-safety notice.</strong> FoodBridge coordinates donations. It does not inspect, test or certify food. Donors and recipients are responsible for following the food-safety rules that apply to them.</div>
+<p class="mt-4"><a class="btn btn-primary" th:href="@{/register}">Join FoodBridge</a></p>
+</div></div>
+
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

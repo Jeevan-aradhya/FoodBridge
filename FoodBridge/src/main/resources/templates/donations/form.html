@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Donation form')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar}"></header>
+<main id="main" class="container py-4">
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<div class="row justify-content-center"><div class="col-lg-9">
+<div class="fb-card p-4 p-md-5">
+  <h1 class="h3" th:text="${editing} ? 'Edit donation' : 'Donate food'">Donate food</h1>
+  <p class="text-muted">Accurate details protect recipients. Times are in your local time.</p>
+  <form th:action="${editing} ? @{/donor/donations/{id}(id=${donationId})} : @{/donor/donations}" th:object="${form}" method="post" enctype="multipart/form-data" novalidate>
+    <div class="alert alert-danger" role="alert" th:if="${#fields.hasGlobalErrors()}"><div th:each="e : ${#fields.globalErrors()}" th:text="${e}">Error</div></div>
+    <div class="row g-3">
+      <div class="col-md-8"><label class="form-label" for="name">Food name</label><input class="form-control" id="name" th:field="*{name}" th:errorclass="is-invalid" maxlength="150"><div class="invalid-feedback" th:errors="*{name}">e</div></div>
+      <div class="col-md-4"><label class="form-label" for="category">Category</label><select class="form-select" id="category" th:field="*{category}" th:errorclass="is-invalid"><option value="">Choose...</option><option th:each="c : ${categories}" th:value="${c}" th:text="${c.label}">Cat</option></select><div class="invalid-feedback" th:errors="*{category}">e</div></div>
+      <div class="col-12"><label class="form-label" for="description">Description</label><textarea class="form-control" id="description" rows="3" maxlength="1000" th:field="*{description}"></textarea></div>
+      <div class="col-6 col-md-3"><label class="form-label" for="quantity">Quantity</label><input class="form-control" id="quantity" type="number" min="1" th:field="*{quantity}" th:errorclass="is-invalid"><div class="invalid-feedback" th:errors="*{quantity}">e</div></div>
+      <div class="col-6 col-md-3"><label class="form-label" for="unit">Unit</label><select class="form-select" id="unit" th:field="*{unit}" th:errorclass="is-invalid"><option value="">Choose...</option><option th:each="u : ${units}" th:value="${u}" th:text="${u.label}">u</option></select><div class="invalid-feedback" th:errors="*{unit}">e</div></div>
+      <div class="col-md-6"><label class="form-label" for="image">Photo (optional)</label><input class="form-control" id="image" name="image" type="file" accept="image/jpeg,image/png,image/webp"><div class="form-text">JPG, PNG or WebP, max 2 MB.</div></div>
+      <div class="col-md-4"><label class="form-label" for="preparedAt">Prepared at</label><input class="form-control" id="preparedAt" type="datetime-local" th:field="*{preparedAt}" th:errorclass="is-invalid"><div class="invalid-feedback" th:errors="*{preparedAt}">e</div></div>
+      <div class="col-md-4"><label class="form-label" for="expiresAt">Expires / best before</label><input class="form-control" id="expiresAt" type="datetime-local" th:field="*{expiresAt}" th:errorclass="is-invalid"><div class="invalid-feedback" th:errors="*{expiresAt}">e</div></div>
+      <div class="col-md-4"><label class="form-label" for="pickupDeadline">Pickup deadline</label><input class="form-control" id="pickupDeadline" type="datetime-local" th:field="*{pickupDeadline}" th:errorclass="is-invalid"><div class="form-text">Must be before the expiry time.</div><div class="invalid-feedback" th:errors="*{pickupDeadline}">e</div></div>
+      <div class="col-md-6"><label class="form-label" for="dietaryInfo">Dietary information</label><input class="form-control" id="dietaryInfo" th:field="*{dietaryInfo}" placeholder="Vegetarian, vegan, halal..."></div>
+      <div class="col-md-6"><label class="form-label" for="allergenInfo">Allergens</label><input class="form-control" id="allergenInfo" th:field="*{allergenInfo}" placeholder="Nuts, gluten, dairy... or None"></div>
+      <div class="col-12"><label class="form-label" for="storageInfo">Preparation and storage notes</label><input class="form-control" id="storageInfo" th:field="*{storageInfo}" placeholder="Keep hot / refrigerate at 4 degrees C"></div>
+      <div class="col-md-8"><label class="form-label" for="pickupAddress">Pickup address</label><input class="form-control" id="pickupAddress" th:field="*{pickupAddress}" th:errorclass="is-invalid"><div class="form-text">Only shown to people involved in an accepted request.</div><div class="invalid-feedback" th:errors="*{pickupAddress}">e</div></div>
+      <div class="col-md-4"><label class="form-label" for="city">City</label><input class="form-control" id="city" th:field="*{city}" th:errorclass="is-invalid"><div class="invalid-feedback" th:errors="*{city}">e</div></div>
+      <div class="col-md-3"><label class="form-label" for="latitude">Latitude (optional)</label><input class="form-control" id="latitude" type="number" step="any" th:field="*{latitude}"></div>
+      <div class="col-md-3"><label class="form-label" for="longitude">Longitude (optional)</label><input class="form-control" id="longitude" type="number" step="any" th:field="*{longitude}"></div>
+      <div class="col-md-6"><label class="form-label" for="pickupInstructions">Special instructions</label><input class="form-control" id="pickupInstructions" th:field="*{pickupInstructions}" maxlength="500"></div>
+    </div>
+    <div class="safety-note mt-4">By publishing you confirm the details are accurate and that the food was prepared and stored according to the food-safety rules that apply to you.</div>
+    <div class="mt-4 d-flex gap-2"><button class="btn btn-primary" type="submit" data-loading th:text="${editing} ? 'Save changes' : 'Publish donation'">Publish</button><a class="btn btn-light" th:href="@{/donor/dashboard}">Cancel</a></div>
+  </form>
+</div></div></div>
+
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

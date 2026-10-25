@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Manage donations')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar}"></header>
+<main id="main" class="container py-4">
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<h1 class="h2 section-title mb-3">Donations, requests and deliveries</h1>
+<div class="d-flex gap-2 mb-3"><a class="btn btn-sm" th:classappend="${!reportedOnly} ? 'btn-primary' : 'btn-outline-primary'" th:href="@{/admin/donations}">All listings</a><a class="btn btn-sm" th:classappend="${reportedOnly} ? 'btn-primary' : 'btn-outline-primary'" th:href="@{/admin/donations(reported=true)}">Reported only</a></div>
+<div class="fb-card mb-4"><div class="table-responsive"><table class="table align-middle mb-0">
+<thead><tr><th>Listing</th><th>Donor</th><th>Left</th><th>Status</th><th>Report</th><th class="text-end">Action</th></tr></thead>
+<tbody><tr th:each="d : ${page.content}">
+  <td><a th:href="@{/donations/{id}(id=${d.id})}" th:text="${d.name}">Food</a></td><td th:text="${d.donorName}">Donor</td>
+  <td th:text="${d.remainingQuantity} + '/' + ${d.quantity}">1/2</td>
+  <td><span class="badge badge-soft" th:text="${d.status}">S</span></td>
+  <td><span class="text-danger small" th:if="${d.reported}" th:text="${d.reportReason}">reason</span></td>
+  <td class="text-end">
+    <form class="d-inline-flex gap-1" th:if="${d.status != 'DISABLED' and d.status != 'WITHDRAWN'}" th:action="@{/admin/donations/{id}/disable(id=${d.id})}" method="post" data-confirm="Disable this listing? The donor will be notified with your reason.">
+      <input class="form-control form-control-sm" name="reason" placeholder="Reason" required maxlength="200" aria-label="Reason for disabling"><button class="btn btn-sm btn-outline-danger" type="submit">Disable</button></form>
+    <form class="d-inline" th:if="${d.status == 'DISABLED'}" th:action="@{/admin/donations/{id}/enable(id=${d.id})}" method="post"><button class="btn btn-sm btn-outline-primary" type="submit">Re-enable</button></form>
+  </td></tr></tbody></table></div></div>
+<div th:replace="~{fragments/layout :: pager(${page}, ${basePath}, ${baseQuery})}"></div>
+
+<h2 class="h4 mt-4">Recent requests</h2>
+<form class="mb-2" th:action="@{/admin/donations}" method="get"><div class="d-flex gap-2 align-items-end"><select class="form-select w-auto" name="requestStatus" aria-label="Request status"><option value="">All statuses</option><option th:each="s : ${statuses}" th:value="${s}" th:text="${s}" th:selected="${s == selectedRequestStatus}">s</option></select><button class="btn btn-outline-primary" type="submit">Filter</button></div></form>
+<div class="fb-card mb-4"><div class="table-responsive"><table class="table mb-0"><thead><tr><th>Food</th><th>Recipient</th><th>Donor</th><th>Qty</th><th>Status</th><th>Delivery</th></tr></thead>
+<tbody><tr th:each="r : ${requestsPage.content}"><td th:text="${r.donationName}">f</td><td th:text="${r.recipientName}">r</td><td th:text="${r.donorName}">d</td><td th:text="${r.quantity} + ' ' + ${r.unit}">5</td><td><span class="badge badge-soft" th:text="${r.status}">S</span></td><td th:text="${r.deliveryStatus != null} ? ${r.deliveryStatus} : '-'">-</td></tr></tbody></table></div></div>
+
+<h2 class="h4">Pickup assignments</h2>
+<div class="fb-card"><div class="table-responsive"><table class="table mb-0"><thead><tr><th>Food</th><th>Volunteer</th><th>Route</th><th>Status</th></tr></thead>
+<tbody><tr th:each="t : ${tasks}"><td th:text="${t.donationName}">f</td><td th:text="${t.volunteerName != null} ? ${t.volunteerName} : 'Unassigned'">v</td><td th:text="${t.pickupCity} + ' to ' + ${t.dropOffCity}">route</td><td><span class="badge badge-soft" th:text="${t.status}">S</span></td></tr></tbody></table></div></div>
+
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

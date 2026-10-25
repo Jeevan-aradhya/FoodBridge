@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Manage users')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar}"></header>
+<main id="main" class="container py-4">
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<h1 class="h2 section-title mb-3">User management</h1>
+<form class="fb-card p-3 mb-3" th:action="@{/admin/users}" method="get"><div class="row g-2 align-items-end">
+  <div class="col-md-5"><label class="form-label small mb-1" for="q">Search name or email</label><input class="form-control" id="q" name="q" th:value="${q}"></div>
+  <div class="col-md-3"><label class="form-label small mb-1" for="role">Role</label><select class="form-select" id="role" name="role"><option value="">All</option><option th:each="r : ${roles}" th:value="${r}" th:text="${r}" th:selected="${r == selectedRole}">r</option></select></div>
+  <div class="col-md-2"><label class="form-label small mb-1" for="status">Status</label><select class="form-select" id="status" name="status"><option value="">All</option><option value="ACTIVE" th:selected="${selectedStatus != null and selectedStatus.name() == 'ACTIVE'}">Active</option><option value="SUSPENDED" th:selected="${selectedStatus != null and selectedStatus.name() == 'SUSPENDED'}">Suspended</option></select></div>
+  <div class="col-md-2"><button class="btn btn-primary w-100" type="submit">Filter</button></div></div></form>
+<div class="fb-card"><div class="table-responsive"><table class="table align-middle mb-0">
+<thead><tr><th>Name</th><th>Email</th><th>Role</th><th>City</th><th>Status</th><th>Joined</th><th class="text-end">Action</th></tr></thead>
+<tbody><tr th:each="u : ${page.content}">
+  <td th:text="${u.fullName}">Name</td><td th:text="${u.email}">email</td><td><span class="badge badge-soft" th:text="${u.role}">R</span></td><td th:text="${u.city}">City</td>
+  <td><span class="badge" th:classappend="${u.status == 'ACTIVE'} ? 'badge-soft' : 'badge-danger-soft'" th:text="${u.status}">S</span></td>
+  <td th:text="${#temporals.format(u.createdAt, 'dd MMM yyyy')}">d</td>
+  <td class="text-end"><th:block th:if="${u.role != 'ADMIN'}">
+    <form class="d-inline" th:if="${u.status == 'ACTIVE'}" th:action="@{/admin/users/{id}/status(id=${u.id})}" method="post" data-confirm="Suspend this account? The user will be signed out immediately."><input type="hidden" name="status" value="SUSPENDED"><button class="btn btn-sm btn-outline-danger" type="submit">Suspend</button></form>
+    <form class="d-inline" th:if="${u.status == 'SUSPENDED'}" th:action="@{/admin/users/{id}/status(id=${u.id})}" method="post"><input type="hidden" name="status" value="ACTIVE"><button class="btn btn-sm btn-outline-primary" type="submit">Reactivate</button></form>
+  </th:block></td></tr></tbody></table></div></div>
+<div th:replace="~{fragments/layout :: pager(${page}, ${basePath}, ${baseQuery})}"></div>
+
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

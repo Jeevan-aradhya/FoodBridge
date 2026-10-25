@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Create account')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar}"></header>
+<main id="main" class="container py-4">
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<div class="row justify-content-center"><div class="col-lg-8">
+  <div class="fb-card p-4 p-md-5">
+    <h1 class="h3 mb-1">Join FoodBridge</h1>
+    <p class="text-muted">Tell us how you want to help reduce food waste.</p>
+    <form th:action="@{/register}" th:object="${form}" method="post" novalidate>
+      <div class="alert alert-danger" role="alert" th:if="${#fields.hasGlobalErrors()}"><div th:each="e : ${#fields.globalErrors()}" th:text="${e}">Error</div></div>
+      <fieldset class="mb-4">
+        <legend class="form-label fs-6">I want to join as</legend>
+        <div class="row g-2">
+          <div class="col-md-4" th:each="r : ${publicRoles}">
+            <input class="btn-check" type="radio" th:field="*{role}" th:value="${r}" th:id="'role-' + ${r}" autocomplete="off">
+            <label class="btn btn-outline-primary w-100 text-start" th:for="'role-' + ${r}">
+              <strong th:text="${r.name() == 'DONOR' ? 'Donor' : (r.name() == 'RECIPIENT' ? 'NGO / Recipient' : 'Volunteer')}">Role</strong><br>
+              <span class="small" th:text="${r.name() == 'DONOR' ? 'Restaurant, bakery, store, individual' : (r.name() == 'RECIPIENT' ? 'Charity, shelter, community group' : 'Collect and deliver food')}">desc</span>
+            </label>
+          </div>
+        </div>
+        <div class="text-danger small mt-1" th:errors="*{role}">Role error</div>
+      </fieldset>
+      <div class="row g-3">
+        <div class="col-md-6"><label class="form-label" for="fullName">Full name</label><input class="form-control" id="fullName" th:field="*{fullName}" th:errorclass="is-invalid" autocomplete="name"><div class="invalid-feedback" th:errors="*{fullName}">e</div></div>
+        <div class="col-md-6"><label class="form-label" for="email">Email</label><input class="form-control" id="email" type="email" th:field="*{email}" th:errorclass="is-invalid" autocomplete="email"><div class="invalid-feedback" th:errors="*{email}">e</div></div>
+        <div class="col-md-6"><label class="form-label" for="password">Password</label><input class="form-control" id="password" type="password" th:field="*{password}" th:errorclass="is-invalid" autocomplete="new-password"><div class="form-text">At least 8 characters with a letter and a number.</div><div class="invalid-feedback" th:errors="*{password}">e</div></div>
+        <div class="col-md-6"><label class="form-label" for="phone">Phone (optional)</label><input class="form-control" id="phone" th:field="*{phone}" th:errorclass="is-invalid" autocomplete="tel"><div class="invalid-feedback" th:errors="*{phone}">e</div></div>
+        <div class="col-md-6"><label class="form-label" for="city">City</label><input class="form-control" id="city" th:field="*{city}" th:errorclass="is-invalid" autocomplete="address-level2"><div class="invalid-feedback" th:errors="*{city}">e</div></div>
+        <div class="col-md-6" data-role-only="DONOR,RECIPIENT"><label class="form-label" for="organizationName">Business / organization name</label><input class="form-control" id="organizationName" th:field="*{organizationName}" th:errorclass="is-invalid"><div class="form-text">Required for NGOs. Shown on your donations.</div><div class="invalid-feedback" th:errors="*{organizationName}">e</div></div>
+        <div class="col-md-6" data-role-only="DONOR,RECIPIENT"><label class="form-label" for="organizationType">Type</label><input class="form-control" id="organizationType" th:field="*{organizationType}" placeholder="Restaurant, NGO, shelter..."></div>
+        <div class="col-md-6" data-role-only="DONOR,RECIPIENT"><label class="form-label" for="address">Address</label><input class="form-control" id="address" th:field="*{address}" th:errorclass="is-invalid" autocomplete="street-address"><div class="form-text">NGOs need an address so volunteers know where to deliver. It is never shown publicly.</div></div>
+        <div class="col-md-6 d-none" data-role-only="VOLUNTEER"><label class="form-label" for="vehicleType">Vehicle</label><input class="form-control" id="vehicleType" th:field="*{vehicleType}" placeholder="Bike, car, on foot"></div>
+        <div class="col-md-6 d-none" data-role-only="VOLUNTEER"><label class="form-label" for="serviceArea">Area you can cover</label><input class="form-control" id="serviceArea" th:field="*{serviceArea}"></div>
+      </div>
+      <button class="btn btn-primary mt-4" type="submit" data-loading>Create account</button>
+      <a class="btn btn-link mt-4" th:href="@{/login}">I already have an account</a>
+    </form>
+  </div>
+</div></div>
+
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

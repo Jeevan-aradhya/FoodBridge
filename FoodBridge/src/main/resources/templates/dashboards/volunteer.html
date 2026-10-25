@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Volunteer dashboard')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar}"></header>
+<main id="main" class="container py-4">
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<h1 class="h2 section-title mb-1">Volunteer dashboard</h1><p class="text-muted">Pick up surplus food and deliver it to organizations that need it.</p>
+<div class="row g-3 mb-4">
+<div class="col-6 col-lg-3"><div class="fb-card stat-card"><div class="label"><i class="bi bi-bell" aria-hidden="true"></i> Open tasks</div><div class="value" th:text="${summary.open}">0</div></div></div><div class="col-6 col-lg-3"><div class="fb-card stat-card"><div class="label"><i class="bi bi-bicycle" aria-hidden="true"></i> My active tasks</div><div class="value" th:text="${summary.active}">0</div></div></div><div class="col-6 col-lg-3"><div class="fb-card stat-card"><div class="label"><i class="bi bi-check2-all" aria-hidden="true"></i> Delivered by me</div><div class="value" th:text="${summary.delivered}">0</div></div></div>
+</div>
+<div class="row g-4">
+  <div class="col-lg-6">
+    <h2 class="h5">Tasks waiting for a volunteer</h2>
+    <div class="fb-card p-3 mb-3" th:each="t : ${openTasks}">
+      <div class="d-flex justify-content-between"><strong th:text="${t.donationName}">Food</strong><span class="badge badge-warn">Open</span></div>
+      <div class="small text-muted my-1"><span th:text="${t.quantity} + ' ' + ${t.unit}">5</span> &middot; from <span th:text="${t.donorName}">Donor</span> (<span th:text="${t.pickupCity}">City</span>) to <span th:text="${t.recipientName}">NGO</span> (<span th:text="${t.dropOffCity}">City</span>)</div>
+      <div class="small mb-2">Pickup by <span class="countdown" th:attr="data-deadline=${t.pickupDeadline}">--</span> &middot; full addresses appear after you accept.</div>
+      <form th:action="@{/volunteer/tasks/{id}/accept(id=${t.id})}" method="post" data-confirm="Accept this pickup task? You are committing to collect and deliver it."><button class="btn btn-sm btn-primary" type="submit">Accept task</button></form>
+    </div>
+    <div class="empty-state fb-card" th:if="${openTasks.isEmpty()}"><i class="bi bi-emoji-smile" aria-hidden="true"></i><p class="mt-2 mb-0">No open tasks right now. Thank you for being ready to help.</p></div>
+  </div>
+  <div class="col-lg-6">
+    <h2 class="h5">My tasks</h2>
+    <div class="fb-card p-3 mb-3" th:each="t : ${myTasks}" th:with="next=${t.status == 'ASSIGNED' ? 'PICKED_UP' : (t.status == 'PICKED_UP' ? 'IN_TRANSIT' : (t.status == 'IN_TRANSIT' ? 'DELIVERED' : null))}">
+      <div class="d-flex justify-content-between"><strong th:text="${t.donationName}">Food</strong><span class="small text-muted" th:text="${t.quantity} + ' ' + ${t.unit}">5</span></div>
+      <div class="my-2"><div th:replace="~{fragments/layout :: timeline(${t.status})}"></div></div>
+      <div class="small" th:if="${t.pickupAddress != null and t.status != 'DELIVERED' and t.status != 'CANCELLED'}">
+        <div><i class="bi bi-box-arrow-up" aria-hidden="true"></i> <strong>Pickup:</strong> <span th:text="${t.donorName} + ', ' + ${t.pickupAddress}">addr</span></div>
+        <div th:if="${t.pickupInstructions}" class="text-muted ms-4" th:text="${t.pickupInstructions}">instr</div>
+        <div class="mt-1"><i class="bi bi-box-arrow-in-down" aria-hidden="true"></i> <strong>Drop-off:</strong> <span th:text="${t.recipientName} + ', ' + ${t.dropOffAddress}">addr</span></div>
+      </div>
+      <form class="mt-2" th:if="${next != null}" th:action="@{/volunteer/tasks/{id}/status(id=${t.id})}" method="post">
+        <input type="hidden" name="status" th:value="${next}">
+        <button class="btn btn-sm btn-primary" type="submit" data-loading th:text="'Mark as ' + ${#strings.toLowerCase(#strings.replace(next, '_', ' '))}">Update</button>
+      </form>
+    </div>
+    <div class="empty-state fb-card" th:if="${myTasks.isEmpty()}"><i class="bi bi-clipboard-check" aria-hidden="true"></i><p class="mt-2 mb-0">Accept a task to see pickup details here.</p></div>
+  </div>
+</div>
+
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>
